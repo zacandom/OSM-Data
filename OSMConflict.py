@@ -22,7 +22,6 @@ COUNTRIES = [
     "Spain", "Sweden", "Switzerland", "United Kingdom"
 ]
 
-
 CONFLICT_HISTORIC_VALUES = [
     "battlefield", "battle_site", "battle",
     "war_memorial", "memorial", "monument",
@@ -173,7 +172,6 @@ def classify_conflict_type(row):
         return None
 
     if hist in {"tank", "aircraft", "ship", "bomb_crater"}:
-        # usually modern; drop unless explicitly tied to old conflict (rare)
         if has_old_conflict and not MODERN_EXCLUDE_PATTERN.search(text):
             return "pre_modern_war_object"
         return None
@@ -241,9 +239,8 @@ def tidy_conflict_sites(gdf: gpd.GeoDataFrame) -> pd.DataFrame:
 
 
 def run_country(country: str):
-    qname = ALIAS.get(country, country)
     try:
-        country_gdf = retry(ox_geo.geocode_to_gdf, qname)
+        country_gdf = retry(ox_geo.geocode_to_gdf, country)
     except Exception:
         return
     geom = country_gdf.geometry.iloc[0]
@@ -276,6 +273,10 @@ def run_country(country: str):
 def main():
     for c in COUNTRIES:
         run_country(c)
+
+
+if __name__ == "__main__":
+    main()
 
 
 if __name__ == "__main__":
